@@ -5,56 +5,48 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Agenda_WPF"
         mc:Ignorable="d"
-        Title="MainWindow" 
+        Title="Agenda Básica - MGContécnica" 
         Height="600" 
-        Width="800">
+        Width="800"
+        Background="#FF5453A2">
 
     <Grid>
         <!-- ID -->
-        <Label x:Name="lblID" 
-               Content="ID" 
-               HorizontalAlignment="Left" 
-               Margin="10,17,0,0" 
-               VerticalAlignment="Top" 
-               RenderTransformOrigin="1.176,0.618"
-               FontSize="16"/>
-
-        <TextBox x:Name="tID" 
-                 HorizontalAlignment="Left" 
-                 Margin="10,43,0,0" 
-                 TextWrapping="Wrap" 
-                 VerticalAlignment="Top" 
-                 Width="80"
-                 FontSize="16"/>
 
         <!-- Nome -->
         <Label x:Name="lblNome" 
                Content="Nome" 
                HorizontalAlignment="Left" 
-               Margin="10,88,0,0" 
+               Margin="30,35,0,0" 
                VerticalAlignment="Top" 
                RenderTransformOrigin="1.176,0.618"
-               FontSize="16"/>
+               FontSize="18" 
+               Width="60" 
+               HorizontalContentAlignment="Center" 
+               VerticalContentAlignment="Center" FontWeight="Bold"/>
 
         <TextBox x:Name="tNome" 
                  HorizontalAlignment="Left" 
-                 Margin="10,114,0,0" 
+                 Margin="30,71,0,0" 
                  TextWrapping="Wrap"  
                  VerticalAlignment="Top" 
-                 Width="350"
+                 Width="301"
                  FontSize="16"/>
 
         <!-- Telefone -->
         <Label x:Name="lblTelefone" 
                Content="Telefone" 
                HorizontalAlignment="Left" 
-               Margin="10,159,0,0" 
+               Margin="30,128,0,0" 
                VerticalAlignment="Top"
-               FontSize="16"/>
+               FontSize="18" 
+               Width="90" 
+               HorizontalContentAlignment="Center" 
+               VerticalContentAlignment="Center" FontWeight="Bold"/>
 
         <TextBox x:Name="tTelefone" 
                  HorizontalAlignment="Left" 
-                 Margin="10,185,0,0" 
+                 Margin="30,164,0,0" 
                  TextWrapping="Wrap" 
                  VerticalAlignment="Top" 
                  Width="180"
@@ -64,79 +56,104 @@
         <Label x:Name="lblEmail" 
                Content="Email" 
                HorizontalAlignment="Left" 
-               Margin="400,57,0,0" 
+               Margin="385,35,0,0" 
                VerticalAlignment="Top"
-               FontSize="16"/>
+               FontSize="18" 
+               Width="70" FontWeight="Bold"/>
 
         <TextBox x:Name="tEmail" 
                  HorizontalAlignment="Left" 
-                 Margin="400,83,0,0" 
+                 Margin="385,71,0,0" 
                  TextWrapping="Wrap" 
                  VerticalAlignment="Top" 
-                 Width="350"
+                 Width="307"
                  FontSize="16"/>
 
         <!-- Apelido -->
         <Label x:Name="lblApelido" 
                Content="Apelido" 
                HorizontalAlignment="Left" 
-               Margin="400,128,0,0" 
+               Margin="385,128,0,0" 
                VerticalAlignment="Top"
-               FontSize="16"/>
+               FontSize="18" 
+               Width="90" FontWeight="Bold"/>
 
         <TextBox x:Name="tApelido" 
                  HorizontalAlignment="Left" 
-                 Margin="400,154,0,0" 
+                 Margin="385,164,0,0" 
                  TextWrapping="Wrap"
                  VerticalAlignment="Top" 
                  Width="180"
                  FontSize="16"/>
 
+        <!-- Pesquisar -->
+        <TextBox x:Name="tPesquisa"
+         HorizontalAlignment="Left"
+         Width="230" 
+         TextChanged="tPesquisa_TextChanged" 
+         Margin="180,319,0,220"/>
+
+
         <!-- Botões -->
         <Button x:Name="btnAdicionar" 
-        Content="Adicionar Novo Contato" 
+        Content="Adicionar Novo" 
         HorizontalAlignment="Left" 
-        Margin="10,0,0,0" 
-        VerticalAlignment="Center" 
-        Width="200"
-        Height="50"
-        FontSize="16"
-        Click="btnAdicionar_Click"/>
+        Margin="42,235,0,0" 
+        VerticalAlignment="Top" 
+        Width="188"
+        Height="39"
+        FontSize="18" 
+        Background="#FF1CB022"
+        Foreground="White"
+        Click="BtnAdicionar_Click" FontFamily="Alef" FontWeight="Bold" BorderBrush="Black"/>
 
         <Button x:Name="btnEditar" 
         Content="Editar" 
         HorizontalAlignment="Left" 
-        Margin="252,0,0,0" 
-        VerticalAlignment="Center" 
+        Margin="253,235,0,0" 
+        VerticalAlignment="Top" 
         Width="150"
-        Height="50"
-        FontSize="16"
-        Click="btnEditar_Click"/>
+        Height="39"
+        FontSize="18" 
+        Background="#FFC98724"
+        Foreground="White"
+        Click="BtnEditar_Click" FontWeight="Bold" FontFamily="Alef" BorderBrush="Black"/>
 
         <Button x:Name="btnExcluir" 
         Content="Excluir" 
         HorizontalAlignment="Left" 
-        Margin="447,0,0,0" 
-        VerticalAlignment="Center" 
+        Margin="426,235,0,0" 
+        VerticalAlignment="Top" 
         Width="150"
-        Height="50"
-        FontSize="16"
-        Click="btnExcluir_Click"/>
+        Height="39"
+        FontSize="18" 
+        Background="#FFCE372C"
+        Foreground="White"
+        Click="BtnExcluir_Click" FontFamily="Alef" FontWeight="Bold" BorderBrush="Black"/>
 
         <Button x:Name="btnSalvar" 
         Content="Salvar" 
         HorizontalAlignment="Left" 
-        Margin="632,0,0,0" 
-        VerticalAlignment="Center" 
-        Width="150"
-        Height="50"
-        FontSize="16"
-        Click="btnSalvar_Click"/>
+        Margin="601,235,0,0" 
+        VerticalAlignment="Top" 
+        Width="140"
+        Height="39"
+        FontSize="18" 
+        Background="#FF2A93E6"
+        Foreground="White"
+        Click="BtnSalvar_Click" FontWeight="Bold" FontFamily="Alef" BorderBrush="Black"/>
+
+        <Button x:Name="btnPesquisar"
+         Content="Pesquisar" 
+         Background="#000" 
+         Foreground="#FFE7E7E7" 
+         FontSize="14" 
+         Click="BtnPesquisar_Click" Margin="440,319,262,220"/>
 
 
         <DataGrid x:Name="dgContatos"
             HorizontalAlignment="Center" 
-            Margin="0,351,0,60" 
+            Margin="0,384,0,40" 
             Width="700"/>
     </Grid>
 </Window>
