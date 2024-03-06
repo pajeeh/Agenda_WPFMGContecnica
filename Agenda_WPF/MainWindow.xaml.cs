@@ -1,37 +1,36 @@
 ﻿using System;
+using System.Collections.ObjectModel;
+using System.Configuration;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Windows;
+using Dapper;
+using Agenda_WPF.Models;
 using System.Windows.Controls;
 
 namespace Agenda_WPF
 {
     public partial class MainWindow : Window
     {
+        private ObservableCollection<Contato> _contatos;
+        private readonly string connectionString;
+        private readonly DataModel dataModel;
+
         public MainWindow()
         {
             InitializeComponent();
-            contexto = new agendaEntities();
-            AtualizarDataGrid();
+
+            connectionString = ConfigurationManager.ConnectionStrings["agendaEntities"].ConnectionString;
+            dataModel = new DataModel(connectionString);
+
         }
 
-        private readonly agendaEntities contexto;
         private string opCrud;
 
         private void AtualizarDataGrid()
         {
-            dgContatos.ItemsSource = contexto.contatos.ToList();
-        }
-
-        private void ListarContatos()
-        {
-            try
-            {
-                dgContatos.ItemsSource = contexto.contatos.ToList();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Ocorreu um erro ao listar os contatos: " + ex.Message, "Erro", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
+            _contatos = dataModel.ObterContatos();
+            dgContatos.ItemsSource = _contatos;
         }
 
         private void LimparCampos()
@@ -45,43 +44,34 @@ namespace Agenda_WPF
         private void BtnPesquisar_Click(object sender, RoutedEventArgs e)
         {
             string termoPesquisa = tPesquisa.Text;
-            try
+            string sql = "SELECT * FROM Contatos WHERE Nome LIKE @Termo OR Email LIKE @Termo OR Apelido LIKE @Termo OR Telefone LIKE @Termo";
+
+            using (var connection = new SqlConnection(connectionString))
             {
-                if (!string.IsNullOrWhiteSpace(termoPesquisa))
+                try
                 {
-                    dgContatos.ItemsSource = contexto.contatos.Where(c => c.nome.Contains(termoPesquisa) || c.email.Contains(termoPesquisa) || c.apelido.Contains(termoPesquisa) || c.telefone.Contains(termoPesquisa)).ToList();
+                    connection.Open();
+                    _contatos = new ObservableCollection<Contato>(connection.Query<Contato>(sql, new { Termo = "%" + termoPesquisa + "%" }));
+                    dgContatos.ItemsSource = _contatos;
                 }
-                else
+                catch (Exception ex)
                 {
-                    ListarContatos();
+                    MessageBox.Show("Ocorreu um erro ao pesquisar os contatos: " + ex.Message, "Erro", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Ocorreu um erro ao pesquisar os contatos: " + ex.Message, "Erro", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
-
-        // Variável para armazenar o ID do contato selecionado para edição
-        private int contatoEditadoId;
 
         private void BtnEditar_Click(object sender, RoutedEventArgs e)
         {
             opCrud = "Editar";
 
-            // Verifica se um contato está selecionado no DataGrid
             if (dgContatos.SelectedItem != null)
             {
-                // Obtém o contato selecionado no DataGrid
-                contato contatoSelecionado = (contato)dgContatos.SelectedItem;
-                // Preenche os campos do formulário com os dados do contato selecionado
-                tNome.Text = contatoSelecionado.nome;
-                tEmail.Text = contatoSelecionado.email;
-                tApelido.Text = contatoSelecionado.apelido;
-                tTelefone.Text = contatoSelecionado.telefone;
-                // Armazena o ID do contato selecionado
-                contatoEditadoId = contatoSelecionado.id;
-                // Define a operação como "Editar"
+                Contato contatoSelecionado = (Contato)dgContatos.SelectedItem;
+                tNome.Text = contatoSelecionado.Nome;
+                tEmail.Text = contatoSelecionado.Email;
+                tApelido.Text = contatoSelecionado.Apelido;
+                tTelefone.Text = contatoSelecionado.Telefone;
                 opCrud = "Editar";
             }
             else
@@ -92,20 +82,18 @@ namespace Agenda_WPF
 
         private void BtnExcluir_Click(object sender, RoutedEventArgs e)
         {
-            // Verifica se um contato está selecionado no DataGrid
             if (dgContatos.SelectedItem != null)
             {
                 try
                 {
-                    // Obtém o contato selecionado no DataGrid
-                    contato contatoSelecionado = (contato)dgContatos.SelectedItem;
-                    // Remove o contato do contexto do banco de dados
-                    contexto.contatos.Remove(contatoSelecionado);
-                    // Salva as alterações no banco de dados
-                    contexto.SaveChanges();
-                    MessageBox.Show("Contato excluído com sucesso!", "Sucesso", MessageBoxButton.OK, MessageBoxImage.Information);
-                    // Atualiza o DataGrid com os contatos atualizados do banco de dados
-                    AtualizarDataGrid();
+                    Contato contatoSelecionado = (Contato)dgContatos.SelectedItem;
+                    using (var connection = new SqlConnection(connectionString))
+                    {
+                        connection.Open();
+                        connection.Execute("DELETE FROM Contatos WHERE id = @Id", new { contatoSelecionado.Id });
+                        MessageBox.Show("Contato excluído com sucesso!", "Sucesso", MessageBoxButton.OK, MessageBoxImage.Information);
+                        AtualizarDataGrid();
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -121,17 +109,11 @@ namespace Agenda_WPF
         private void BtnAdicionar_Click(object sender, RoutedEventArgs e)
         {
             opCrud = "Adicionar";
-
-            // Limpa os campos de texto
             LimparCampos();
-
-            // Define a operação como "Adicionar"
-            opCrud = "Adicionar";
         }
 
         private void BtnSalvar_Click(object sender, RoutedEventArgs e)
         {
-            // Verifica se os campos obrigatórios estão preenchidos
             if (string.IsNullOrWhiteSpace(tNome.Text) || string.IsNullOrWhiteSpace(tEmail.Text) ||
                 string.IsNullOrWhiteSpace(tApelido.Text) || string.IsNullOrWhiteSpace(tTelefone.Text))
             {
@@ -144,37 +126,34 @@ namespace Agenda_WPF
             {
                 if (opCrud == "Adicionar")
                 {
-                    // Adicionar um novo contato
-                    contato c = new contato();
-                    c.nome = tNome.Text;
-                    c.email = tEmail.Text;
-                    c.apelido = tApelido.Text;
-                    c.telefone = tTelefone.Text;
-                    contexto.contatos.Add(c);
+                    using (var connection = new SqlConnection(connectionString))
+                    {
+                        connection.Open();
+                        connection.Execute("INSERT INTO Contatos (Nome, Email, Apelido, Telefone) VALUES (@Nome, @Email, @Apelido, @Telefone)",
+                            new { Nome = tNome.Text, Email = tEmail.Text, Apelido = tApelido.Text, Telefone = tTelefone.Text });
+                    }
                     MessageBox.Show("Contato adicionado com sucesso!", "Sucesso", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
                 else if (opCrud == "Editar")
                 {
-                    // Encontrar o contato existente pelo ID
-                    var contatoEditado = contexto.contatos.FirstOrDefault(c => c.id == contatoEditadoId);
-                    if (contatoEditado != null)
+                    if (dgContatos.SelectedItem != null)
                     {
-                        // Atualizar os dados do contato existente com os dados do formulário
-                        contatoEditado.nome = tNome.Text;
-                        contatoEditado.email = tEmail.Text;
-                        contatoEditado.apelido = tApelido.Text;
-                        contatoEditado.telefone = tTelefone.Text;
+                        Contato contatoEditado = (Contato)dgContatos.SelectedItem;
+                        using (var connection = new SqlConnection(connectionString))
+                        {
+                            connection.Open();
+                            connection.Execute("UPDATE Contatos SET Nome = @Nome, Email = @Email, Apelido = @Apelido, Telefone = @Telefone WHERE id = @Id",
+                                new { Nome = tNome.Text, Email = tEmail.Text, Apelido = tApelido.Text, Telefone = tTelefone.Text, contatoEditado.Id });
+                        }
                         MessageBox.Show("Contato editado com sucesso!", "Sucesso", MessageBoxButton.OK, MessageBoxImage.Information);
+                    }
+                    else
+                    {
+                        MessageBox.Show("Selecione um contato para editar.", "Atenção", MessageBoxButton.OK, MessageBoxImage.Warning);
                     }
                 }
 
-                // Salvar as alterações no banco de dados
-                contexto.SaveChanges();
-
-                // Limpa os campos do formulário
                 LimparCampos();
-
-                // Atualiza o DataGrid com os contatos atualizados do banco de dados
                 AtualizarDataGrid();
             }
             catch (Exception ex)
@@ -185,13 +164,13 @@ namespace Agenda_WPF
 
         private void BtnLimpar_Click(object sender, RoutedEventArgs e)
         {
-            // Limpa os campos do formulário
             LimparCampos();
         }
 
-        private void tPesquisa_TextChanged(object sender, TextChangedEventArgs e)
+        private void TPesquisa_TextChanged(object sender, TextChangedEventArgs e)
         {
-
+            // Seu código para lidar com o evento TextChanged aqui
         }
+
     }
 }

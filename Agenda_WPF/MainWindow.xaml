@@ -90,7 +90,7 @@
         <TextBox x:Name="tPesquisa"
          HorizontalAlignment="Left"
          Width="230" 
-         TextChanged="tPesquisa_TextChanged" 
+         TextChanged="TPesquisa_TextChanged" 
          Margin="180,319,0,220"/>
 
 
