@@ -9,12 +9,13 @@ Um simples aplicativo de agenda desenvolvido em WPF (Windows Presentation Founda
 - **Editar Contato:** Edite os detalhes de contatos existentes, como nome, e-mail, telefone e apelido.
 - **Excluir Contato:** Remova contatos indesejados da sua agenda.
 - **Salvar Contato:** Salve os contatos adicionados ou editados no banco de dados.
+- **Pesquisar Contato:** Permite pesquisar os contatos salvos.
 
 ## Tecnologias Utilizadas
 
 - C#: Linguagem de programação usada para desenvolver a lógica do aplicativo.
 - WPF (Windows Presentation Foundation): Framework de interface gráfica usado para criar a interface do usuário.
-- Entity Framework: Framework de mapeamento objeto-relacional para interagir com o banco de dados.
+- Dapper: Biblioteca para interagir com o banco de dados.
 - SQL Server: Banco de dados utilizado para armazenar os contatos.
 
 ## Como Usar
@@ -27,6 +28,10 @@ Um simples aplicativo de agenda desenvolvido em WPF (Windows Presentation Founda
 ## Contribuindo
 
 Contribuições são bem-vindas! Se você tiver sugestões, melhorias ou encontrar problemas, sinta-se à vontade para abrir uma issue ou enviar um pull request.
+
+## Fontes:
+https://www.catiawidgets.net/2022/02/17/wpf-dapper-and-mysql-a-simple-example/
+https://www.macoratti.net/19/09/cshp_dapb1.htm
 
 ## Autor
 
